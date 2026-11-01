@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 
@@ -18,11 +17,18 @@ if not DATABASE_URL:
         "sqlite:///" + (INSTANCE_DIR / "cha_casa_nova.db").as_posix()
     )
 
+# Configuração do driver PostgreSQL psycopg 3
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace(
         "postgres://",
+        "postgresql+psycopg://",
+        1,
+    )
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace(
         "postgresql://",
-        1
+        "postgresql+psycopg://",
+        1,
     )
 
 
