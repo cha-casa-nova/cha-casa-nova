@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fff9e9">
+    <title>Chá de Casa Nova | Anny &amp; Kayo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <main class="convite">
+        <img class="moldura-cima" src="{{ url_for('static', filename='images/moldura-parte-cima.png') }}" alt="" aria-hidden="true">
+        <img class="moldura-baixo" src="{{ url_for('static', filename='images/moldura-parte-baixo.png') }}" alt="" aria-hidden="true">
+
+        <div class="conteudo">
+            <div class="selo-topo" aria-hidden="true">🏡</div>
+            <p class="subtitulo">Um novo capítulo começa</p>
+            <h1>Anny</h1>
+            <p class="e">&amp;</p>
+            <h1 class="nome-kayo">Kayo</h1>
+
+            <div class="divisor" aria-hidden="true">♡</div>
+            <p class="mensagem">
+                Nosso cantinho está ganhando vida, e queremos compartilhar esse momento tão especial com você!
+                <br><br>
+                Venha celebrar conosco o início dessa nova etapa, cheia de amor, sonhos e muitas histórias para viver.
+            </p>
+            <p class="frase">Você faz parte da nossa história. ♡</p>
+
+            <section class="contagem-regressiva" aria-labelledby="titulo-contagem">
+                <h2 id="titulo-contagem">Nosso grande dia está chegando! ♡</h2>
+                <p class="data-evento">20 de fevereiro de 2027<br>Às 16h30</p>
+                <div class="relogio" aria-label="Contagem regressiva">
+                    <div class="unidade-tempo"><span class="numero-tempo" id="dias">000</span><span class="rotulo-tempo">Dias</span></div>
+                    <div class="unidade-tempo"><span class="numero-tempo" id="horas">00</span><span class="rotulo-tempo">Horas</span></div>
+                    <div class="unidade-tempo"><span class="numero-tempo" id="minutos">00</span><span class="rotulo-tempo">Minutos</span></div>
+                    <div class="unidade-tempo"><span class="numero-tempo" id="segundos">00</span><span class="rotulo-tempo">Segundos</span></div>
+                </div>
+                <p class="mensagem-contagem" id="mensagem-contagem" aria-live="polite">Cada segundo nos aproxima desse momento especial! 🌼</p>
+            </section>
+
+            <section class="localizacao">
+                <h2>Onde será nosso chá? ♡</h2>
+                <p class="endereco">📍 Rua Nordeste, 315<br>Terenos – MS, CEP 79190-000</p>
+                <iframe class="mapa" src="https://maps.google.com/maps?q=Rua%20Nordeste%2C%20315%2C%20Terenos%2C%20MS%2C%20Brasil&output=embed" title="Mapa da localização do chá de casa nova" loading="lazy" allowfullscreen></iframe>
+                <a class="botao-mapa" href="https://www.google.com/maps/dir/?api=1&amp;destination=Rua%20Nordeste%2C%20315%2C%20Terenos%2C%20MS%2C%20Brasil" target="_blank" rel="noopener noreferrer">📍 Como chegar</a>
+            </section>
+
+            <section class="formulario">
+                <h2>Você vem celebrar com a gente?</h2>
+                <form action="{{ url_for('confirmar') }}" method="POST">
+                    <div class="campo">
+                        <label for="nome">Seu nome</label>
+                        <input type="text" id="nome" name="nome" maxlength="100" autocomplete="name" placeholder="Digite seu nome" required>
+                    </div>
+                    <div class="campo">
+                        <label for="presenca">Você poderá comparecer?</label>
+                        <select id="presenca" name="presenca" required>
+                            <option value="">Selecione uma opção</option>
+                            <option value="sim">Sim, estarei presente!</option>
+                            <option value="nao">Infelizmente, não poderei ir.</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="acompanhantes">Quantidade de acompanhantes</label>
+                        <input type="number" id="acompanhantes" name="acompanhantes" min="0" max="20" value="0" required>
+                    </div>
+
+                    <div class="escolha-presente">
+                        <button class="botao-presentes" type="button" id="abrir-presentes" aria-expanded="false" aria-controls="conteudo-presentes">🎁 Quer escolher um presente? ♡</button>
+                        <div class="conteudo-presentes" id="conteudo-presentes" hidden>
+                            <p class="ajuda-presente">A escolha é totalmente opcional. Você pode escolher um presente da lista abaixo ou fazer uma surpresa. </p>
+                            <label for="presente_id">Escolha um presente, se desejar</label>
+                            <select id="presente_id" name="presente_id">
+                                <option value="">Não quero escolher agora</option>
+                                {% set categorias = ['Cozinha', 'Banheiro', 'Quarto e decoração', 'Sala e eletrodomésticos'] %}
+                                {% for categoria in categorias %}
+                                    <optgroup label="{{ categoria }}">
+                                        {% for presente in lista_presentes if presente.category == categoria %}
+                                            <option value="{{ presente.id }}" {% if presente.reserved_at %}disabled{% endif %}>
+                                                {{ presente.name }}{% if presente.reserved_at %} — Já reservado{% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                            <label class="opcao-surpresa" for="presente_surpresa">
+                                <input type="checkbox" id="presente_surpresa" name="presente_surpresa" value="sim">
+                                <span>Prefiro fazer uma surpresa 🎁</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button class="botao" type="submit">Confirmar presença ♡</button>
+                </form>
+
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+                    {% for categoria, mensagem in mensagens %}
+                        <p class="mensagem-status {{ categoria }}" role="status">{{ mensagem }}</p>
+                    {% endfor %}
+                {% endwith %}
+            </section>
+
+            <div class="divisor" aria-hidden="true">♡</div>
+            <p class="rodape">COM AMOR, ANNY &amp; KAYO</p>
+            <div class="flores-rodape" aria-hidden="true">🌷 🤍 🌷</div>
+        </div>
+    </main>
+</body>
+</html>

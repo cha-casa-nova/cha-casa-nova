@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FFFAF2">
+    <title>Lista de Presentes | Anny & Kayo</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --creme: #FFFAF2;
+            --amarelo: #FFF3C4;
+            --verde: #DDEAD7;
+            --rosa: #EBCFD4;
+            --azul: #D5E7F5;
+            --texto: #65594F;
+            --borda: #E8DED0;
+        }
+
+        body {
+            margin: 0;
+            padding: 28px 14px 50px;
+            background: var(--creme);
+            color: var(--texto);
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        .cabecalho {
+            text-align: center;
+            margin: 15px auto 30px;
+        }
+
+        .cabecalho .icone {
+            font-size: 38px;
+        }
+
+        h1 {
+            margin: 10px 0;
+            font-family: Georgia, serif;
+            font-size: clamp(30px, 5vw, 44px);
+            font-weight: normal;
+            color: #7A8C70;
+        }
+
+        .introducao {
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .paleta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 22px;
+            margin: 32px auto;
+        }
+
+        .cor {
+            width: 104px;
+            height: 104px;
+            border: 5px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px #00000012;
+            cursor: pointer;
+            position: relative;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .cor:hover {
+            transform: translateY(-5px) rotate(-4deg);
+        }
+
+        .cor[aria-pressed="true"] {
+            box-shadow: 0 0 0 3px #7A8C70, 0 6px 16px #00000015;
+            transform: translateY(-4px);
+        }
+
+        .cor span {
+            position: absolute;
+            left: 50%;
+            bottom: -30px;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--texto);
+        }
+
+        .cor-amarela {
+            background: var(--amarelo);
+        }
+
+        .cor-verde {
+            background: var(--verde);
+        }
+
+        .cor-azul {
+            background: var(--azul);
+        }
+
+        .cor-preta {
+            background: #292929;
+        }
+
+        .cor-preta span {
+            color: #292929;
+        }
+
+        .dica {
+            text-align: center;
+            margin: 42px 0 22px;
+            font-size: 14px;
+            opacity: .8;
+        }
+
+        .categoria {
+            display: none;
+            animation: aparecer .25s ease;
+        }
+
+        .categoria.ativa {
+            display: block;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(7px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .titulo-categoria {
+            text-align: center;
+            margin: 24px 0;
+            font-family: Georgia, serif;
+            font-size: 27px;
+            font-weight: normal;
+        }
+
+        .grade {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .presente {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: #FFFFFF;
+            border: 1px solid var(--borda);
+            border-radius: 17px;
+            box-shadow: 0 4px 14px #65594F08;
+            min-width: 0;
+        }
+
+        .presente h3 {
+            margin: 0 0 12px;
+            font-size: 17px;
+            font-weight: normal;
+            line-height: 1.45;
+        }
+
+        .status {
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #5F805A;
+        }
+
+        .status.reservado {
+            color: #A65C64;
+        }
+
+        .presente form {
+            margin-top: auto;
+        }
+
+        .presente button {
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 20px;
+            background: #DDEAD7;
+            color: #43553E;
+            font-weight: bold;
+            cursor: pointer;
+            transition: filter .2s;
+        }
+
+        .presente button:hover {
+            filter: brightness(.97);
+        }
+
+        .presente button:disabled {
+            background: #ECE8E2;
+            color: #827C75;
+            cursor: not-allowed;
+        }
+
+        .mensagens {
+            max-width: 650px;
+            margin: 0 auto 20px;
+        }
+
+        .mensagem {
+            padding: 13px 16px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            background: #DDEAD7;
+        }
+
+        .mensagem.erro {
+            background: #F5DDDF;
+        }
+
+        .voltar {
+            display: block;
+            width: fit-content;
+            margin: 35px auto 0;
+            padding: 12px 22px;
+            border: 1px solid #D8DCCF;
+            border-radius: 22px;
+            color: #596B50;
+            text-decoration: none;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 20px;
+            color: #82776C;
+        }
+
+        @media (max-width: 480px) {
+            .cor {
+                width: 78px;
+                height: 78px;
+            }
+
+            .paleta {
+                gap: 16px;
+            }
+
+            .grade {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main>
+
+    <header class="cabecalho">
+        <div class="icone" aria-hidden="true">🎨</div>
+
+        <h1>Lista de Presentes</h1>
+
+        <p class="introducao">
+            Estamos preparando nosso novo lar com muito carinho.
+            Escolha uma cor da nossa paleta, encontre um presente
+            e reserve aquele que deseja nos dar. 💛
+        </p>
+    </header>
+
+    <div class="mensagens" aria-live="polite">
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria_msg, mensagem in mensagens %}
+                <div class="mensagem {% if categoria_msg == 'erro' %}erro{% endif %}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
+
+    <section class="paleta" aria-label="Categorias de presentes">
+
+        <button class="cor cor-amarela"
+                type="button"
+                data-categoria="Cozinha"
+                aria-label="Presentes para cozinha"
+                aria-pressed="true">
+            <span>Amarelo</span>
+        </button>
+
+        <button class="cor cor-verde"
+                type="button"
+                data-categoria="Banheiro"
+                aria-label="Presentes para banheiro"
+                aria-pressed="false">
+            <span>Verde</span>
+        </button>
+
+        <button class="cor cor-azul"
+                type="button"
+                data-categoria="Quarto e decoração"
+                aria-label="Presentes para quarto e decoração"
+                aria-pressed="false">
+            <span>Azul</span>
+        </button>
+
+        <button class="cor cor-preta"
+                type="button"
+                data-categoria="Sala e eletrodomésticos"
+                aria-label="Presentes para sala e eletrodomésticos"
+                aria-pressed="false">
+            <span>Preto</span>
+        </button>
+
+    </section>
+
+    <p class="dica">
+        Toque em uma cor para descobrir os presentes daquela categoria.
+    </p>
+
+    {% set categorias = [
+        ("Cozinha", "Presentes para a cozinha"),
+        ("Banheiro", "Presentes para o banheiro"),
+        ("Quarto e decoração", "Quarto e decoração"),
+        ("Sala e eletrodomésticos", "Sala e eletrodomésticos")
+    ] %}
+
+    {% for categoria, titulo in categorias %}
+
+        <section class="categoria {% if loop.first %}ativa{% endif %}"
+                 data-lista="{{ categoria }}"
+                 {% if not loop.first %}hidden{% endif %}>
+
+            <h2 class="titulo-categoria">{{ titulo }}</h2>
+
+            <div class="grade">
+
+                {% set encontrados = namespace(total=0) %}
+
+                {% for presente in presentes %}
+
+                    {% if presente.category == categoria %}
+
+                        {% set encontrados.total = encontrados.total + 1 %}
+
+                        <article class="presente">
+
+                            <h3>{{ presente.name }}</h3>
+
+                            {% if presente.reserved_at %}
+
+                                <div class="status reservado">
+                                    Já reservado 💗
+                                </div>
+
+                                <button type="button" disabled>
+                                    Presente reservado
+                                </button>
+
+                            {% else %}
+
+                                <div class="status">
+                                    Disponível para reserva
+                                </div>
+
+                                <form method="POST"
+                                      action="{{ url_for('reservar', gift_id=presente.id) }}">
+
+                                    <button type="submit">
+                                        Reservar presente
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </article>
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {% if encontrados.total == 0 %}
+                    <p class="vazio">
+                        Não há presentes nesta categoria.
+                    </p>
+                {% endif %}
+
+            </div>
+        </section>
+
+    {% endfor %}
+
+    <a class="voltar" href="{{ url_for('home') }}">
+        ← Voltar ao convite
+    </a>
+
+</main>
+
+<script>
+    const botoes = document.querySelectorAll(".cor");
+    const listas = document.querySelectorAll(".categoria");
+
+    function selecionarCategoria(categoriaSelecionada) {
+
+        botoes.forEach((botao) => {
+
+            const selecionado =
+                botao.dataset.categoria === categoriaSelecionada;
+
+            botao.setAttribute(
+                "aria-pressed",
+                String(selecionado)
+            );
+
+        });
+
+        listas.forEach((lista) => {
+
+            const selecionada =
+                lista.dataset.lista === categoriaSelecionada;
+
+            lista.classList.toggle("ativa", selecionada);
+            lista.hidden = !selecionada;
+
+        });
+    }
+
+    botoes.forEach((botao) => {
+
+        botao.addEventListener("click", () => {
+            selecionarCategoria(botao.dataset.categoria);
+        });
+
+    });
+</script>
+
+</body>
+</html>

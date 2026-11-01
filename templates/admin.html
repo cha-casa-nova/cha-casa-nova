@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmações | Anny &amp; Kayo</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px 15px;
+            background: #fff8f7;
+            color: #655253;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1, h2 {
+            color: #bd8194;
+        }
+
+        .resumo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .cartao {
+            padding: 20px;
+            background: #fffdf9;
+            border: 1px solid #e9c7ce;
+            border-radius: 14px;
+        }
+
+        .numero {
+            margin-top: 8px;
+            font-size: 30px;
+            color: #bd8194;
+        }
+
+        .tabela {
+            overflow-x: auto;
+            background: #fffdf9;
+            border: 1px solid #e9c7ce;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #f0dfe2;
+        }
+
+        th {
+            background: #f8e9ec;
+        }
+
+        .lista-presentes {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fffdf9;
+            border: 1px solid #e9c7ce;
+            border-radius: 14px;
+        }
+
+        .lista-presentes ul {
+            padding-left: 22px;
+            line-height: 1.9;
+        }
+
+        .categoria {
+            margin-top: 18px;
+            color: #a96f83;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 11px 17px;
+            border: 0;
+            border-radius: 20px;
+            background: #bd8194;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .botao-excluir {
+            padding: 8px 13px;
+            background: #b85c65;
+            font-size: 12px;
+        }
+
+        .botao-liberar {
+            padding: 8px 13px;
+            background: #64866b;
+            font-size: 12px;
+        }
+
+        .presente-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 5px 0;
+        }
+
+        .presente-item form,
+        .tabela form {
+            margin: 0;
+        }
+
+        a {
+            color: #a96f83;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 10px;
+            }
+
+            .cartao {
+                padding: 15px;
+            }
+
+            .lista-presentes {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main>
+    <h1>♡ Anny &amp; Kayo</h1>
+    <p>Painel privado de confirmações de presença</p>
+
+    <form method="POST" action="{{ url_for('admin_sair') }}">
+        <button type="submit">Sair da área privada</button>
+    </form>
+
+    <section class="resumo">
+        <div class="cartao">
+            <div>Respostas recebidas</div>
+            <div class="numero">{{ convidados|length }}</div>
+        </div>
+
+        <div class="cartao">
+            <div>Confirmaram</div>
+            <div class="numero">{{ confirmados }}</div>
+        </div>
+
+        <div class="cartao">
+            <div>Não poderão ir</div>
+            <div class="numero">{{ recusas }}</div>
+        </div>
+
+        <div class="cartao">
+            <div>Total de pessoas confirmadas, incluindo acompanhantes</div>
+            <div class="numero">{{ total_pessoas }}</div>
+        </div>
+    </section>
+
+    <h2>Lista de respostas</h2>
+
+    {% if convidados %}
+        <div class="tabela">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Resposta</th>
+                        <th>Acompanhantes</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for pessoa in convidados %}
+                        <tr>
+                            <td>{{ pessoa.name }}</td>
+
+                            <td>
+                                {% if pessoa.attendance == "sim" %}
+                                    Confirmou presença
+                                {% else %}
+                                    Não poderá ir
+                                {% endif %}
+                            </td>
+
+                            <td>{{ pessoa.companions }}</td>
+
+                            <td>
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('excluir_convidado', convidado_id=pessoa.id) }}"
+                                    onsubmit="return confirm('Tem certeza que deseja excluir esta confirmação?');"
+                                >
+                                    <button type="submit" class="botao-excluir">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Ainda não há respostas registradas.</p>
+    {% endif %}
+
+    <section class="lista-presentes">
+        <h2>🎁 Presentes reservados</h2>
+
+        {% if presentes_reservados %}
+            {% set categoria_atual = namespace(nome="") %}
+
+            {% for presente in presentes_reservados %}
+
+                {% if categoria_atual.nome != presente.category %}
+
+                    {% if not loop.first %}
+                        </ul>
+                    {% endif %}
+
+                    <div class="categoria">
+                        {{ presente.category }}
+                    </div>
+
+                    <ul>
+                    {% set categoria_atual.nome = presente.category %}
+
+                {% endif %}
+
+                <li class="presente-item">
+                    <span>{{ presente.name }}</span>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('liberar_presente', gift_id=presente.id) }}"
+                        onsubmit="return confirm('Deseja liberar este presente para uma nova reserva?');"
+                    >
+                        <button type="submit" class="botao-liberar">
+                            Liberar presente
+                        </button>
+                    </form>
+                </li>
+
+                {% if loop.last %}
+                    </ul>
+                {% endif %}
+
+            {% endfor %}
+
+        {% else %}
+            <p>Nenhum presente reservado ainda.</p>
+        {% endif %}
+    </section>
+
+    <p>
+        <a href="{{ url_for('home') }}">Voltar ao convite público</a>
+    </p>
+</main>
+</body>
+</html>

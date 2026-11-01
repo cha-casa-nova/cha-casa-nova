@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área privada | Anny &amp; Kayo</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: #fff8f7;
+            color: #655253;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            width: 100%;
+            max-width: 400px;
+            padding: 32px;
+            border: 1px solid #e9c7ce;
+            border-radius: 20px;
+            background: #fffdf9;
+            text-align: center;
+        }
+
+        h1 { color: #bd8194; font-weight: normal; }
+        p { line-height: 1.6; }
+        label { display: block; text-align: left; margin: 20px 0 8px; }
+
+        input, button {
+            width: 100%;
+            padding: 13px;
+            border-radius: 9px;
+            font-size: 16px;
+        }
+
+        input { border: 1px solid #e5c4cb; }
+
+        button {
+            margin-top: 18px;
+            border: 0;
+            background: #c98298;
+            color: white;
+            cursor: pointer;
+        }
+
+        .erro { color: #a73737; }
+        a { color: #a96f83; }
+    </style>
+</head>
+<body>
+    <main>
+        <div style="font-size: 38px;">🔐</div>
+        <h1>Área privada</h1>
+        <p>Confirmações de presença</p>
+        <p>Anny &amp; Kayo ♡</p>
+
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            <label for="senha">Senha do organizador</label>
+            <input
+                type="password"
+                id="senha"
+                name="senha"
+                autocomplete="current-password"
+                required
+            >
+            <button type="submit">Entrar</button>
+        </form>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+                <p class="{{ categoria }}" role="status">
+                    {{ mensagem }}
+                </p>
+            {% endfor %}
+        {% endwith %}
+
+        <p><a href="{{ url_for('home') }}">Voltar ao convite</a></p>
+    </main>
+</body>
+</html>

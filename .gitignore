@@ -1,0 +1,26 @@
+gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ambientes virtuais
+venv/
+.venv/
+
+# Banco de dados e dados privados
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Senhas e variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
